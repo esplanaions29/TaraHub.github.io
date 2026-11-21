@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <title>TARA HUB – LEARNING FOR FMES | Felicidad Magday Elementary School • Explore • Learn • Play • Grow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --blue-dark: #0f294a;
+      --blue: #1d4ed8;
+      --blue-mid: #2563eb;
+      --blue-soft: #eff6ff;
+      --orange: #f97316;
+      --orange-dark: #ea580c;
+      --orange-soft: #fff7ed;
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --line: #dbeafe;
+      --shadow: 0 12px 30px rgba(15, 41, 74, 0.09);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; border: 0; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 2px;
+    }
+
+    /* Top bar & layout */
+    .topbar {
+      height: 74px;
+      background: #ffffff;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 21px; color: var(--blue-dark); }
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--orange));
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-size: 22px;
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+      flex-shrink: 0;
+    }
+    .brand small { display: block; font-size: 10px; color: var(--orange-dark); letter-spacing: 1.4px; font-weight: 800; }
+    .top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      background: var(--orange-soft);
+      color: var(--orange-dark);
+      border: 1px solid #fed7aa;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .iconbtn {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      border: 1px solid #bfdbfe;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .iconbtn:hover { background: #dbeafe; }
+
+    .layout { display: grid; grid-template-columns: 255px minmax(0, 1fr); max-width: 1640px; margin: 0 auto; min-height: calc(100vh - 74px); }
+    .sidebar {
+      padding: 18px 14px;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+    }
+    .nav-label { font-size: 11px; letter-spacing: 1.3px; color: #64748b; font-weight: 800; padding: 14px 12px 6px; text-transform: uppercase; }
+    .navbtn {
+      width: 100%;
+      text-align: left;
+      padding: 11px 13px;
+      border-radius: 13px;
+      background: transparent;
+      color: #334155;
+      font-weight: 700;
+      font-size: 14px;
+      margin: 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.15s ease;
+    }
+    .navbtn:hover { background: var(--blue-soft); color: var(--blue); }
+    .navbtn.active {
+      background: linear-gradient(90deg, var(--blue), var(--blue-mid));
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.22);
+    }
+    .navbtn .ico { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+    .side-note {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--blue-soft), var(--orange-soft));
+      border: 1px solid #fed7aa;
+      font-size: 12px;
+      color: var(--blue-dark);
+      font-weight: 600;
+    }
+
+    .main { padding: 26px; min-width: 0; }
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1.6px; font-weight: 900; color: var(--orange-dark); }
+    .heading { font-size: clamp(26px, 3vw, 36px); font-weight: 900; margin: 6px 0 8px; letter-spacing: -0.6px; color: var(--blue-dark); }
+    .sub { color: var(--muted); font-size: 15px; margin: 0 0 20px; max-width: 820px; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(120deg, var(--blue-dark) 0%, var(--blue) 58%, var(--orange) 125%);
+      border-radius: 26px;
+      color: #ffffff;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero h1 { font-size: clamp(24px, 3vw, 36px); font-weight: 900; margin: 0 0 8px; max-width: 640px; }
+    .hero p { margin: 0; color: #e0f2fe; max-width: 620px; font-size: 15px; }
+    .hero-mascot { font-size: 74px; z-index: 1; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.25)); }
+
+    /* Buttons */
+    .btn {
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      background: var(--blue);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.15s ease;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.18);
+    }
+    .btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn.orange { background: var(--orange); color: #ffffff; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25); }
+    .btn.light { background: #ffffff; color: var(--blue-dark); box-shadow: none; }
+    .btn.soft { background: var(--blue-soft); color: var(--blue); border: 1px solid #bfdbfe; box-shadow: none; }
+    .btn.gray { background: #e2e8f0; color: #334155; box-shadow: none; }
+    .btn.mint { background: #0d9488; color: #ffffff; box-shadow: none; }
+    .btn.small { padding: 8px 12px; font-size: 12px; border-radius: 10px; }
+    .btnrow { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+
+    /* Cards & Grids */
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 18px 0 24px; }
+    .stat, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(15, 41, 74, 0.05);
+    }
+    .stat { padding: 16px 18px; }
+    .stat .num { font-size: 28px; font-weight: 900; color: var(--blue-dark); }
+    .stat .label { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .stat .symbol { float: right; font-size: 22px; }
+
+    .section-title { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 12px; gap: 10px; flex-wrap: wrap; }
+    .section-title h2 { font-size: 19px; font-weight: 800; margin: 0; color: var(--blue-dark); }
+    .section-title span { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    .subject-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .subject-card { padding: 18px; text-align: left; position: relative; min-height: 150px; transition: 0.2s ease; }
+    .subject-card:hover { transform: translateY(-3px); border-color: var(--orange); box-shadow: var(--shadow); }
+    .subject-icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 25px; margin-bottom: 12px; }
+    .subject-card h3 { margin: 0 0 5px; font-size: 17px; font-weight: 800; color: var(--blue-dark); }
+    .subject-card p { margin: 0; color: var(--muted); font-size: 13px; }
+    .subject-card .arrow { position: absolute; right: 16px; bottom: 14px; color: var(--orange); font-weight: 900; font-size: 18px; }
+
+    .quick-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .quick { padding: 16px; text-align: center; border-radius: 16px; background: #ffffff; border: 1px solid var(--line); font-weight: 800; color: var(--blue-dark); font-size: 14px; }
+    .quick:hover { border-color: var(--orange); background: var(--orange-soft); }
+    .quick b { display: block; font-size: 26px; margin-bottom: 6px; }
+
+    /* Lessons & Large Classroom Visibility */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      border-radius: 16px;
+      margin-bottom: 14px;
+    }
+    .term-chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid #bfdbfe;
+    }
+    .term-chip.active {
+      background: var(--orange);
+      color: #ffffff;
+      border-color: var(--orange);
+    }
+
+    .lesson-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
+    .lesson-card { padding: 24px; font-size: 17px; }
+    .lesson-card.teaching-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      border-radius: 0;
+      overflow-y: auto;
+      padding: 32px 42px;
+      background: #ffffff;
+      border: 0;
+    }
+    .lesson-card.teaching-fullscreen .activity-box { font-size: 22px; line-height: 1.75; padding: 28px; }
+    .lesson-card.teaching-fullscreen .activity-box h3 { font-size: 32px; }
+    .lesson-card.teaching-fullscreen .question { font-size: 28px; }
+    .lesson-card.teaching-fullscreen .answer,
+    .lesson-card.teaching-fullscreen .btn { font-size: 18px; padding: 14px 20px; }
+
+    .example-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+    .example-card {
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+      border-left: 5px solid var(--orange);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(15, 41, 74, 0.05);
+    }
+    .example-card .ex-label { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.7px; color: var(--orange-dark); margin-bottom: 6px; }
+    .example-card .ex-main { font-size: 19px; font-weight: 800; color: var(--blue-dark); margin-bottom: 6px; }
+    .example-card .ex-note { font-size: 16px; color: #334155; line-height: 1.5; }
+
+    .lesson-side { display: flex; flex-direction: column; gap: 14px; }
+    .side-card { padding: 18px; }
+    .tag {
+      display: inline-block;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid #bfdbfe;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      margin: 0 5px 6px 0;
+    }
+    .tag.term { background: var(--orange-soft); color: var(--orange-dark); border-color: #fed7aa; }
+
+    .activity-tabs { display: flex; gap: 7px; overflow-x: auto; margin: 14px 0; padding-bottom: 4px; }
+    .tab {
+      white-space: nowrap;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .tab.active { background: var(--blue); color: #ffffff; }
+
+    .activity-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 22px;
+      min-height: 250px;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+    .activity-box h3 { margin: 0 0 8px; font-size: 23px; font-weight: 900; color: var(--blue-dark); }
+    .question { font-size: 23px; font-weight: 800; line-height: 1.45; margin: 14px 0 18px; color: var(--ink); }
+    .answers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .answer {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      color: var(--ink);
+      font-weight: 700;
+      text-align: left;
+      font-size: 16px;
+    }
+    .answer:hover { border-color: var(--blue); background: var(--blue-soft); }
+    .answer.selected { border-color: var(--orange); background: var(--orange-soft); }
+    .answer.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+    .answer.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+
+    .feedback { margin-top: 14px; padding: 13px 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: none; }
+    .feedback.show { display: block; }
+    .feedback.good { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .feedback.bad { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+    .activity-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .progress { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--orange)); width: 0%; transition: 0.3s ease; }
+
+    .field { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 11px; background: #ffffff; color: var(--ink); font-size: 14px; }
+    .fieldlabel { font-size: 12px; color: #334155; font-weight: 800; display: block; margin: 10px 0 5px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .match-item { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #ffffff; font-weight: 800; font-size: 16px; text-align: center; }
+    .match-item.selected { border-color: var(--orange); background: var(--orange-soft); }
+    .match-item.done { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+    .word-slots { display: flex; gap: 8px; flex-wrap: wrap; min-height: 46px; margin: 12px 0; justify-content: center; }
+    .slot { min-width: 42px; padding: 10px; border: 2px dashed #94a3b8; border-radius: 10px; text-align: center; font-weight: 900; font-size: 18px; background: #ffffff; }
+    .tile { padding: 10px 14px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; font-weight: 800; font-size: 15px; }
+
+    /* QR & Attendance Cards */
+    .dropzone {
+      border: 2px dashed var(--blue);
+      background: var(--blue-soft);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .dropzone:hover, .dropzone.dragover { background: var(--orange-soft); border-color: var(--orange); }
+    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; margin-top: 16px; }
+    .qr-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(15, 41, 74, 0.05);
+    }
+    .qr-box { display: flex; justify-content: center; margin: 10px 0; min-height: 128px; align-items: center; }
+    .status-pill { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+    .status-present { background: #dcfce7; color: #166534; }
+    .status-absent { background: var(--orange-soft); color: var(--orange-dark); }
+
+    /* Whiteboard */
+    .whiteboard { width: 100%; height: 400px; border: 2px dashed #94a3b8; border-radius: 14px; background: #ffffff; touch-action: none; display: block; margin-top: 12px; }
+
+    /* Modal & Chat */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      width: min(520px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .chat-fab {
+      position: fixed;
+      right: 22px;
+      bottom: 20px;
+      width: 62px;
+      height: 62px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--blue), var(--orange));
+      color: #ffffff;
+      font-size: 28px;
+      box-shadow: 0 10px 24px rgba(15, 41, 74, 0.28);
+      z-index: 45;
+    }
+    .chat-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 92px;
+      width: min(390px, calc(100vw - 24px));
+      height: min(550px, calc(100vh - 120px));
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      z-index: 45;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-panel.open { display: flex; }
+    .chat-head {
+      background: linear-gradient(110deg, var(--blue-dark), var(--blue));
+      color: #ffffff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-messages { padding: 14px; overflow-y: auto; flex: 1; background: #f8fafc; }
+    .bubble { max-width: 86%; padding: 10px 13px; border-radius: 14px; margin: 7px 0; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .bubble.bot { background: #e0f2fe; color: var(--blue-dark); font-weight: 600; }
+    .bubble.user { background: var(--orange); color: #ffffff; margin-left: auto; font-weight: 600; }
+    .chat-quick { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; border-top: 1px solid var(--line); background: #ffffff; }
+    .chat-quick button { white-space: nowrap; background: var(--blue-soft); color: var(--blue); border-radius: 999px; padding: 6px 10px; font-size: 11px; font-weight: 800; }
+    .chat-compose { display: flex; gap: 7px; padding: 10px; border-top: 1px solid var(--line); background: #ffffff; }
+    .chat-compose input { flex: 1; min-width: 0; border: 1px solid #cbd5e1; border-radius: 11px; padding: 10px; font-size: 13px; }
+    .chat-compose button { background: var(--orange); color: #ffffff; border-radius: 11px; padding: 0 14px; font-weight: 800; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 24px);
+      background: var(--blue-dark);
+      color: #ffffff;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.25s ease;
+      z-index: 95;
+      border-left: 4px solid var(--orange);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .smallmuted { font-size: 13px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+    th { background: var(--blue-soft); color: var(--blue-dark); font-weight: 800; }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 74px minmax(0, 1fr); }
+      .navbtn { justify-content: center; padding: 12px 6px; }
+      .navbtn .navtext, .nav-label, .side-note { display: none; }
+      .lesson-layout { grid-template-columns: 1fr; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .topbar { padding: 0 12px; height: 64px; }
+      .brand { font-size: 17px; }
+      .top-actions .pill { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 62px;
+        z-index: 35;
+        display: flex;
+        justify-content: space-around;
+        border-right: 0;
+        border-top: 2px solid var(--line);
+        padding: 4px 6px;
+      }
+      .navbtn { width: auto; flex: 1; margin: 0; border-radius: 10px; }
+      .main { padding: 16px 12px 82px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .subject-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .answers { grid-template-columns: 1fr; }
+      .hero { flex-direction: column; align-items: flex-start; padding: 20px; }
+      .hero-mascot { font-size: 52px; align-self: flex-end; }
+    }
+    @media print {
+      .topbar, .sidebar, .chat-fab, .chat-panel, .no-print { display: none !important; }
+      .main { padding: 0; }
+      body { background: #ffffff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">✦</div>
+        <div>TARA HUB<small>LEARNING FOR FMES • FELICIDAD MAGDAY ELEMENTARY SCHOOL • EXPLORE • LEARN • PLAY • GROW</small></div>
+      </div>
+      <div class="top-actions">
+        <span class="pill" id="gradePill">GRADE 2 • LEARNER MODE</span>
+        <span class="pill" id="userBadge" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe">Guest</span>
+        <button class="iconbtn" onclick="openLoginModal()">🔐 Log In</button>
+        <button class="iconbtn" onclick="showPage('teacher')">⚙ Teacher</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="nav-label">Learning Space</div>
+        <button class="navbtn active" data-page="home" onclick="showPage('home')"><span class="ico">🏠</span><span class="navtext">Home</span></button>
+        <button class="navbtn" data-page="curriculum" onclick="showPage('curriculum')"><span class="ico">🗺️</span><span class="navtext">MATATAG Explorer</span></button>
+        <button class="navbtn" data-page="subjects" onclick="showPage('subjects')"><span class="ico">📚</span><span class="navtext">Subjects &amp; Lessons</span></button>
+        <button class="navbtn" data-page="reading" onclick="showPage('reading')"><span class="ico">📖</span><span class="navtext">Reading &amp; Fluency</span></button>
+        <button class="navbtn" data-page="games" onclick="showPage('games')"><span class="ico">🎮</span><span class="navtext">Game Center</span></button>
+        <button class="navbtn" data-page="generator" onclick="showPage('generator');startActivityGenerator()"><span class="ico">♾️</span><span class="navtext">Smart Activities</span></button>
+
+        <div class="nav-label">Classroom &amp; Teacher</div>
+        <button class="navbtn" data-page="teacher" onclick="showPage('teacher')"><span class="ico">🧑‍🏫</span><span class="navtext">Teacher Center</span></button>
+        <button class="navbtn" data-page="attendance" onclick="showPage('attendance')"><span class="ico">📲</span><span class="navtext">Attendance &amp; QR</span></button>
+        <button class="navbtn" data-page="board" onclick="showPage('board')"><span class="ico">✏️</span><span class="navtext">Whiteboard</span></button>
+        <button class="navbtn" data-page="progress" onclick="showPage('progress')"><span class="ico">🏆</span><span class="navtext">My Passport</span></button>
+        <div class="side-note">📘 <strong>TARA HUB – LEARNING FOR FMES</strong><br />Felicidad Magday Elementary School • <em>Explore • Learn • Play • Grow</em></div>
+      </aside>
+
+      <main class="main">
+        <!-- HOME PAGE -->
+        <section class="page active" id="page-home">
+          <div class="hero">
+            <div>
+              <div class="eyebrow" style="color:#fed7aa">FELICIDAD MAGDAY ELEMENTARY SCHOOL • EXPLORE • LEARN • PLAY • GROW</div>
+              <h1>TARA HUB – LEARNING FOR FMES</h1>
+              <p>Welcome to Felicidad Magday Elementary School's MATATAG learning hub. Explore lessons by grade and term, practice with rich examples, spin the Word Wheel, scan student QR codes, and teach in full screen.</p>
+              <div class="btnrow">
+                <button class="btn light" onclick="showPage('subjects')">Explore Subjects →</button>
+                <button class="btn orange" onclick="openLoginModal()">Student / Teacher Login</button>
+                <button class="btn soft" onclick="toggleChat()">Ask TARA ✨</button>
+              </div>
+            </div>
+            <div class="hero-mascot">🤖</div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span class="symbol">⭐</span><div class="num" id="statStars">0</div><div class="label">Stars earned</div></div>
+            <div class="stat"><span class="symbol">🎯</span><div class="num" id="statDone">0</div><div class="label">Activities completed</div></div>
+            <div class="stat"><span class="symbol">📚</span><div class="num" id="statLessons">0</div><div class="label">Lessons practiced</div></div>
+            <div class="stat"><span class="symbol">🔥</span><div class="num" id="statAccuracy">—</div><div class="label">Practice accuracy</div></div>
+          </div>
+
+          <div class="section-title"><h2>Choose your learning world</h2><span>Pick a subject to begin</span></div>
+          <div class="subject-grid" id="homeSubjects"></div>
+
+          <div class="section-title"><h2>Quick adventures</h2><span>Jump into games, QR attendance, or whiteboard</span></div>
+          <div class="quick-grid">
+            <button class="quick" onclick="startQuick('wheel')"><b>🎡</b>Word Wheel</button>
+            <button class="quick" onclick="startQuick('memory')"><b>🧠</b>Memory Match</button>
+            <button class="quick" onclick="showPage('attendance')"><b>📲</b>QR Attendance</button>
+            <button class="quick" onclick="showPage('board')"><b>✏️</b>Whiteboard</button>
+          </div>
+        </section>
+
+        <!-- MATATAG CURRICULUM EXPLORER -->
+        <section class="page" id="page-curriculum">
+          <div class="eyebrow">DEPED MATATAG ALIGNED</div>
+          <h1 class="heading">MATATAG Curriculum Explorer</h1>
+          <p class="sub">Filter competencies across Grades 1–6 and Terms 1–3, track coverage status, import/export JSON or Excel, and send competencies into activities.</p>
+
+          <div class="card" style="padding:18px;margin-bottom:16px">
+            <div class="grid-3">
+              <div>
+                <label class="fieldlabel">Grade Level</label>
+                <select class="field" id="curGradeFilter" onchange="renderCurriculum()">
+                  <option value="ALL">All Grades (1–6)</option>
+                  <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
+                  <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                </select>
+              </div>
+              <div>
+                <label class="fieldlabel">Learning Area</label>
+                <select class="field" id="curAreaFilter" onchange="renderCurriculum()">
+                  <option value="ALL">All Learning Areas</option>
+                  <option>Language</option><option>Reading and Literacy</option><option>Mathematics</option>
+                  <option>Makabansa</option><option>GMRC</option><option>English</option><option>Filipino</option>
+                  <option>Science</option><option>Araling Panlipunan</option><option>MAPEH</option><option>EPP</option>
+                </select>
+              </div>
+              <div>
+                <label class="fieldlabel">Term</label>
+                <select class="field" id="curTermFilter" onchange="renderCurriculum()">
+                  <option value="ALL">All Terms (1–3)</option>
+                  <option value="Term 1">Term 1</option>
+                  <option value="Term 2">Term 2</option>
+                  <option value="Term 3">Term 3</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top:8px">
+              <div>
+                <label class="fieldlabel">Search Keyword or Code</label>
+                <input class="field" id="curSearch" placeholder="Search competency, code, or topic..." oninput="renderCurriculum()" />
+              </div>
+              <div>
+                <label class="fieldlabel">Import / Export Curriculum Data</label>
+                <div class="btnrow" style="margin-top:0">
+                  <button class="btn soft small" onclick="exportCurriculumJson()">Export JSON</button>
+                  <button class="btn orange small" onclick="exportCurriculumExcel()">Export Excel (.xlsx)</button>
+                  <label class="btn gray small" style="margin:0">Import JSON/Excel <input type="file" accept=".json,.xlsx,.xls,.csv" class="hidden" onchange="importCurriculumFile(event)" /></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:18px">
+            <div class="section-title" style="margin-top:0">
+              <h2>Curriculum Competencies &amp; Coverage</h2>
+              <span id="curSummary">0 competencies</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Grade • Area • Term</th>
+                    <th>Official Competency</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="curriculumTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SUBJECTS & LESSON PAGE -->
+        <section class="page" id="page-subjects">
+          <div class="eyebrow">DISCOVER • PRACTICE • MASTER</div>
+          <h1 class="heading">Learning Worlds</h1>
+          <p class="sub">Every grade level has its own complexity and lessons, and you can sort or filter lessons by Term 1, Term 2, or Term 3.</p>
+          <div class="subject-grid" id="allSubjects"></div>
+        </section>
+
+        <section class="page" id="page-lesson">
+          <div class="eyebrow" id="lessonEyebrow">LEARNING WORLD</div>
+          <h1 class="heading" id="lessonTitle">Lesson</h1>
+          <p class="sub" id="lessonDesc"></p>
+
+          <!-- Grade & Term Sorting Controls -->
+          <div class="filter-bar no-print">
+            <div style="display:flex;align-items:center;gap:6px">
+              <label for="lessonGradeSelect" style="font-size:12px;font-weight:800;color:var(--blue-dark)">Grade:</label>
+              <select class="field" id="lessonGradeSelect" style="width:auto;padding:7px 11px" onchange="changeLessonGrade(this.value)">
+                <option>Grade 1</option>
+                <option selected>Grade 2</option>
+                <option>Grade 3</option>
+                <option>Grade 4</option>
+                <option>Grade 5</option>
+                <option>Grade 6</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="font-size:12px;font-weight:800;color:var(--blue-dark)">Sort by Term:</span>
+              <button class="term-chip active" data-term="ALL" onclick="setLessonTermFilter('ALL')">All Terms</button>
+              <button class="term-chip" data-term="Term 1" onclick="setLessonTermFilter('Term 1')">Term 1</button>
+              <button class="term-chip" data-term="Term 2" onclick="setLessonTermFilter('Term 2')">Term 2</button>
+              <button class="term-chip" data-term="Term 3" onclick="setLessonTermFilter('Term 3')">Term 3</button>
+            </div>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+              <label for="lessonPicker" style="font-size:12px;font-weight:800;color:var(--blue-dark)">Lesson:</label>
+              <select class="field" id="lessonPicker" style="width:auto;min-width:190px;padding:7px 11px" onchange="loadLesson(Number(this.value))"></select>
+            </div>
+          </div>
+
+          <div class="lesson-layout">
+            <div class="lesson-main">
+              <div class="card lesson-card">
+                <div id="lessonTags"></div>
+                <div class="section-title">
+                  <h2 id="activityHeading">Learn it</h2>
+                  <span id="activityCount">Activity 1 of 10</span>
+                </div>
+                <div class="progress"><span id="activityProgress"></span></div>
+                <div class="activity-tabs" id="activityTabs"></div>
+                <div class="activity-box" id="activityContent"></div>
+                <div class="activity-footer no-print">
+                  <button class="btn gray" onclick="prevActivity()">← Back</button>
+                  <button class="btn soft" id="teachFullscreenBtn" onclick="toggleTeachingFullscreen()">🖥️ Full Screen Teaching</button>
+                  <button class="btn orange" onclick="nextActivity()">Next activity →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="lesson-side no-print">
+              <div class="card side-card">
+                <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;color:var(--blue-dark)">🎯 Learning Goal</h3>
+                <p class="smallmuted" id="lessonGoal"></p>
+                <button class="btn soft small" onclick="toggleChat('Explain this lesson to me in simple words.')">Ask TARA to explain</button>
+              </div>
+              <div class="card side-card">
+                <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;color:var(--blue-dark)">🌟 Lesson Stars</h3>
+                <div style="font-size:28px;font-weight:900;color:var(--orange-dark)" id="lessonStars">0 ⭐</div>
+                <p class="smallmuted">Complete activities and earn stars.</p>
+              </div>
+              <div class="card side-card">
+                <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;color:var(--blue-dark)">💡 Need a Hint?</h3>
+                <p class="smallmuted">TARA gives clues without spoiling the answer.</p>
+                <button class="btn orange small" onclick="toggleChat('Give me a hint for this activity.')">Get a hint</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- READING & FLUENCY PAGE -->
+        <section class="page" id="page-reading">
+          <div class="eyebrow">READ • SPEAK • GROW</div>
+          <h1 class="heading">Reading &amp; Fluency Center</h1>
+          <p class="sub">Practice Filipino and English reading passages, check accuracy &amp; comprehension, and record Words Per Minute (WPM).</p>
+          <div class="grid-2">
+            <div class="card" style="padding:20px">
+              <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">📖 Passage &amp; Fluency Tracker</h3>
+              <label class="fieldlabel">Passage Language &amp; Grade</label>
+              <div class="grid-2">
+                <select class="field" id="readLang" onchange="renderReadingPassage()">
+                  <option value="en">English Passage</option>
+                  <option value="fil">Filipino Passage</option>
+                </select>
+                <select class="field" id="readGrade" onchange="renderReadingPassage()">
+                  <option>Grade 1</option><option selected>Grade 2</option><option>Grade 3</option>
+                  <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                </select>
+              </div>
+              <div id="readingPassageBox" style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:14px;padding:16px;margin:12px 0;font-size:18px;line-height:1.75;font-weight:600"></div>
+              <div class="btnrow" style="margin-top:0">
+                <button class="btn soft small" onclick="speakCurrentPassage()">🔊 Listen</button>
+                <button class="btn small" onclick="startReadingTimer()">⏱️ Start Timer</button>
+                <button class="btn gray small" onclick="stopReadingTimer()">⏹ Stop</button>
+                <span class="pill" id="readTimerText">0s</span>
+              </div>
+              <div class="grid-3" style="margin-top:10px">
+                <div><label class="fieldlabel">Correct Words</label><input type="number" class="field" id="readCorrectWords" min="0" value="25" /></div>
+                <div><label class="fieldlabel">Error Words</label><input type="number" class="field" id="readErrorWords" min="0" value="1" /></div>
+                <div><label class="fieldlabel">Comprehension %</label><input type="number" class="field" id="readCompScore" min="0" max="100" value="90" /></div>
+              </div>
+              <button class="btn orange" style="margin-top:12px" onclick="saveFluencyRecord()">Save Fluency Record</button>
+            </div>
+
+            <div class="card" style="padding:20px">
+              <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">📊 Fluency Log</h3>
+              <div id="fluencySummary" class="smallmuted" style="margin-bottom:10px">No fluency records yet.</div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Learner</th><th>WPM</th><th>Accuracy</th><th>Comp.</th></tr></thead>
+                  <tbody id="fluencyTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- GAME CENTER (INCLUDES EXPANDED WORD WHEEL) -->
+        <section class="page" id="page-games">
+          <div class="eyebrow">PLAY TO LEARN</div>
+          <h1 class="heading">Interactive Game Center</h1>
+          <p class="sub">Spin the expanded Word Wheel, test your memory, or try a quick grade-level quiz.</p>
+          <div class="subject-grid">
+            <button class="card subject-card" onclick="startQuick('wheel')">
+              <div class="subject-icon" style="background:#fff7ed">🎡</div>
+              <h3>Word Wheel (60+ Words)</h3>
+              <p>Spin English and Filipino words with hints and read-aloud.</p>
+              <span class="arrow">→</span>
+            </button>
+            <button class="card subject-card" onclick="startQuick('memory')">
+              <div class="subject-icon" style="background:#eff6ff">🧠</div>
+              <h3>Memory Match</h3>
+              <p>Match pictures and words to earn stars.</p>
+              <span class="arrow">→</span>
+            </button>
+            <button class="card subject-card" onclick="startQuick('quiz')">
+              <div class="subject-icon" style="background:#fff7ed">🎯</div>
+              <h3>Quick Quiz</h3>
+              <p>Answer grade-tuned questions across subjects.</p>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+          <div class="card" id="gameArea" style="padding:22px;margin-top:18px">
+            <h3 style="margin:0 0 6px;font-size:18px;font-weight:800;color:var(--blue-dark)">Select a game above to start!</h3>
+            <p class="smallmuted">Click <strong>Word Wheel</strong> to spin from over 60 English and Filipino learning words.</p>
+          </div>
+        </section>
+
+        <!-- SMART ACTIVITY GENERATOR -->
+        <section class="page" id="page-generator">
+          <div class="eyebrow">CREATE • PRACTICE • REPEAT</div>
+          <h1 class="heading">♾️ Smart Activity Generator</h1>
+          <p class="sub">Generate grade-adapted activities and differentiated practice questions offline.</p>
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="grid-3">
+              <div>
+                <label class="fieldlabel" for="igSubject">Learning Area</label>
+                <select class="field" id="igSubject" onchange="updateIGTopics()">
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="English">English</option>
+                  <option value="Filipino">Filipino</option>
+                  <option value="Science">Science</option>
+                  <option value="Reading">Reading</option>
+                  <option value="GMRC">GMRC / Values</option>
+                  <option value="Makabansa">Makabansa</option>
+                </select>
+              </div>
+              <div>
+                <label class="fieldlabel" for="igGrade">Grade Level</label>
+                <select class="field" id="igGrade">
+                  <option>Grade 1</option><option selected>Grade 2</option><option>Grade 3</option>
+                  <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                </select>
+              </div>
+              <div>
+                <label class="fieldlabel" for="igTopic">Topic / Competency</label>
+                <input class="field" id="igTopic" list="igTopicList" placeholder="Choose or type a topic" />
+                <datalist id="igTopicList"></datalist>
+              </div>
+            </div>
+            <div class="btnrow">
+              <button class="btn" onclick="startActivityGenerator()">✨ Generate Activity</button>
+              <button class="btn orange" onclick="generateIGBatch(5)">Generate 5 Questions</button>
+              <button class="btn gray" onclick="resetIGHistory()">Reset History</button>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px">
+            <div class="section-title" style="margin-top:0">
+              <h2 id="igActivityTitle">Activity Ready</h2>
+              <span id="igCounter">Activity 0</span>
+            </div>
+            <div class="progress"><span id="igProgress" style="width:0%"></span></div>
+            <div id="igActivity" class="activity-box" style="margin-top:14px"></div>
+            <div class="btnrow">
+              <button class="btn soft" onclick="checkIGAnswer()">Check Answer</button>
+              <button class="btn orange" onclick="nextIGActivity()">Next Activity →</button>
+            </div>
+            <div id="igBatch" class="smallmuted" style="margin-top:14px"></div>
+          </div>
+        </section>
+
+        <!-- TEACHER CENTER: CLASSES, PPT/PDF/DOCX MATERIALS & ANALYTICS -->
+        <section class="page" id="page-teacher">
+          <div class="eyebrow">PLAN • UPLOAD • ANALYZE</div>
+          <h1 class="heading">Teacher Command Center</h1>
+          <p class="sub">Create classes, upload PPT/PDF/DOCX materials per class, configure settings, and export learner progress.</p>
+
+          <div class="grid-2">
+            <div class="card" style="padding:20px">
+              <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">🏫 Create a Class</h3>
+              <label class="fieldlabel">Class / Section Name</label>
+              <input class="field" id="newClassName" placeholder="e.g. Grade 2 - Sampaguita" />
+              <div class="grid-2">
+                <div>
+                  <label class="fieldlabel">Grade Level</label>
+                  <select class="field" id="newClassGrade">
+                    <option>Grade 1</option><option selected>Grade 2</option><option>Grade 3</option>
+                    <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="fieldlabel">Teacher Name</label>
+                  <input class="field" id="teacherNameInput" placeholder="Teacher name" />
+                </div>
+              </div>
+              <button class="btn orange" style="margin-top:12px" onclick="createClassRoom()">+ Create Class</button>
+              <div id="classListBox" style="margin-top:14px"></div>
+            </div>
+
+            <div class="card" style="padding:20px">
+              <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">📎 Class Materials Upload (PPT, PDF, DOCX)</h3>
+              <label class="fieldlabel">Target Class</label>
+              <select class="field" id="matClassSelect"></select>
+              <label class="fieldlabel">Select PPT, PDF, or DOCX File</label>
+              <input type="file" class="field" id="matFileInput" accept=".ppt,.pptx,.pdf,.doc,.docx" />
+              <button class="btn" style="margin-top:12px" onclick="uploadClassMaterial()">Upload Material</button>
+              <div id="materialsListBox" style="margin-top:14px"></div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px;margin-top:16px">
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">📊 Classroom Summary &amp; Backup (Felicidad Magday Elementary School)</h3>
+            <p class="smallmuted" id="teacherStatsText"></p>
+            <div class="btnrow">
+              <button class="btn soft small" onclick="exportProgressJson()">Export Progress JSON</button>
+              <button class="btn gray small" onclick="resetProgress()">Reset Progress</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ATTENDANCE & QR CODE GENERATOR -->
+        <section class="page" id="page-attendance">
+          <div class="eyebrow">ROSTER • QR CODES • CHECK-IN</div>
+          <h1 class="heading">Student Attendance &amp; QR Generator</h1>
+          <p class="sub">Upload an Excel (<code>.xlsx</code>, <code>.xls</code>) or <code>.csv</code> file with student names, or add students manually to generate individual attendance QR codes.</p>
+
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="dropzone" id="rosterDropzone" onclick="$('rosterFileInput').click()">
+              <div style="font-size:32px">📥</div>
+              <div style="font-weight:800;color:var(--blue-dark)">Click or drag &amp; drop Student Excel / CSV file here</div>
+              <div class="smallmuted">Supports columns like <strong>Name</strong>, <strong>Student Name</strong>, <strong>ID</strong>, and <strong>Class</strong>.</div>
+              <input type="file" id="rosterFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleRosterFile(event)" />
+            </div>
+
+            <div class="grid-3" style="margin-top:12px">
+              <div><label class="fieldlabel">Add Student Name</label><input class="field" id="manualStudentName" placeholder="e.g. Juan Dela Cruz" /></div>
+              <div><label class="fieldlabel">Student ID (Optional)</label><input class="field" id="manualStudentId" placeholder="e.g. STU-101" /></div>
+              <div><label class="fieldlabel">Class / Section</label><select class="field" id="manualStudentClass"></select></div>
+            </div>
+
+            <div class="btnrow">
+              <button class="btn orange small" onclick="addManualStudent()">+ Add Student &amp; QR</button>
+              <button class="btn soft small" onclick="downloadSampleRoster()">Download Sample Excel</button>
+              <button class="btn small" onclick="downloadAllQrZip()">📦 Download All QR (.zip)</button>
+              <button class="btn mint small" onclick="exportAttendanceExcel()">📊 Export Attendance Excel</button>
+              <button class="btn gray small" onclick="window.print()">🖨️ Print QR Cards</button>
+            </div>
+
+            <div class="grid-2" style="margin-top:12px">
+              <div><label class="fieldlabel">Scan / Search Name or ID to Check In</label><input class="field" id="qrScanInput" placeholder="Type student name or ID and press Enter..." onkeydown="if(event.key==='Enter')quickCheckIn()" /></div>
+              <div><label class="fieldlabel">Filter by Class</label><select class="field" id="qrClassFilter" onchange="renderStudentQrCards()"></select></div>
+            </div>
+          </div>
+
+          <div class="qr-grid" id="qrCardsContainer"></div>
+        </section>
+
+        <!-- INTERACTIVE WHITEBOARD -->
+        <section class="page" id="page-board">
+          <div class="eyebrow">WRITE • DRAW • SOLVE</div>
+          <h1 class="heading">Interactive Whiteboard</h1>
+          <p class="sub">Draw diagrams, write solutions, or use grid/math helpers on desktop, tablet, or touchscreen.</p>
+          <div class="card" style="padding:18px">
+            <div class="btnrow" style="margin-top:0">
+              <button class="btn soft small" onclick="setPen('pen')">✏️ Pen</button>
+              <button class="btn soft small" onclick="setPen('eraser')">🧽 Eraser</button>
+              <label class="smallmuted">Color <input type="color" id="penColor" value="#1d4ed8" /></label>
+              <label class="smallmuted">Size <input type="range" id="penSize" min="2" max="18" value="4" /></label>
+              <button class="btn gray small" onclick="clearBoard()">Clear</button>
+              <button class="btn orange small" onclick="downloadBoard()">Save PNG</button>
+            </div>
+            <canvas id="whiteboard" class="whiteboard" width="1100" height="420"></canvas>
+          </div>
+        </section>
+
+        <!-- MY PASSPORT / PROGRESS -->
+        <section class="page" id="page-progress">
+          <div class="eyebrow">CELEBRATE YOUR GROWTH</div>
+          <h1 class="heading">My Learning Passport</h1>
+          <p class="sub">Track your earned stars, completed activities, and badges.</p>
+          <div class="stats">
+            <div class="stat"><div class="num" id="pStars">0</div><div class="label">Stars</div></div>
+            <div class="stat"><div class="num" id="pDone">0</div><div class="label">Activities</div></div>
+            <div class="stat"><div class="num" id="pCorrect">0</div><div class="label">Correct</div></div>
+            <div class="stat"><div class="num" id="pAccuracy">—</div><div class="label">Accuracy</div></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <h3 style="margin:0 0 8px;font-size:18px;font-weight:800;color:var(--blue-dark)">🏅 Badges Unlocked</h3>
+            <p id="passportBadges" class="smallmuted"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- STUDENT & TEACHER LOGIN MODAL -->
+    <div class="modal-backdrop" id="loginModal" onclick="if(event.target===this)closeLoginModal()">
+      <div class="modal-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h3 style="margin:0;font-size:20px;font-weight:900;color:var(--blue-dark)">🔐 TARA HUB Login</h3>
+          <button class="btn gray small" onclick="closeLoginModal()">✕</button>
+        </div>
+
+        <div class="btnrow" style="margin-top:0;margin-bottom:12px">
+          <button class="btn small" id="tabLoginStudent" onclick="switchLoginTab('student')">🎓 Student Login</button>
+          <button class="btn soft small" id="tabLoginTeacher" onclick="switchLoginTab('teacher')">🧑‍🏫 Teacher Login</button>
+        </div>
+
+        <div id="studentLoginForm">
+          <label class="fieldlabel">Student Name</label>
+          <input class="field" id="loginStudentName" placeholder="Enter your full name" />
+          <label class="fieldlabel">Choose Your Class</label>
+          <select class="field" id="loginStudentClass"></select>
+          <label class="fieldlabel">Student PIN / ID (Optional)</label>
+          <input class="field" id="loginStudentPin" placeholder="e.g. 1234 or STU-101" />
+          <div class="btnrow">
+            <button class="btn orange" onclick="loginAsStudent()">Enter Class &amp; Mark Present</button>
+          </div>
+        </div>
+
+        <div id="teacherLoginForm" class="hidden">
+          <label class="fieldlabel">Teacher Name</label>
+          <input class="field" id="loginTeacherName" placeholder="Enter teacher name" />
+          <label class="fieldlabel">Teacher Access PIN</label>
+          <input type="password" class="field" id="loginTeacherPin" placeholder="Enter PIN (default: 1234)" />
+          <div class="btnrow">
+            <button class="btn" onclick="loginAsTeacher()">Log In as Teacher</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARA AI ASSISTANT -->
+    <button class="chat-fab" onclick="toggleChat()" aria-label="Ask TARA">🤖</button>
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-head">
+        <div style="font-size:26px">🤖</div>
+        <div>
+          <strong>TARA • Learning Buddy</strong><br />
+          <small style="color:#fed7aa">LEARNING FOR FMES • Explore • Learn • Play • Grow</small>
+        </div>
+        <button class="btn gray small" style="margin-left:auto" onclick="toggleChat()">✕</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="bubble bot">Hi! I'm TARA. Ask me for examples, hints, or explanations in English or Filipino!</div>
+      </div>
+      <div class="chat-quick">
+        <button onclick="quickAsk('Give me more examples for this lesson.')">More examples</button>
+        <button onclick="quickAsk('Give me a hint.')">Give a hint</button>
+        <button onclick="quickAsk('Explain this simply.')">Explain simply</button>
+      </div>
+      <div class="chat-compose">
+        <input id="chatInput" placeholder="Ask TARA..." onkeydown="if(event.key==='Enter')sendChat()" />
+        <button onclick="sendChat()">Send</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    // Safe DOM helper
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeAttr(s) {
+      return escapeHtml(s);
+    }
+
+    function toast(msg) {
+      const t = $("toast");
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2400);
+    }
+
+    // Expanded Word Wheel pool (60+ English & Filipino words)
+    const WORD_WHEEL_WORDS = [
+      // Starter & Phonics
+      "cat", "hat", "bat", "mat", "rat", "map", "tap", "cap", "nap", "sun",
+      "run", "fun", "bun", "pig", "wig", "dig", "big", "dog", "log", "fog",
+      "hop", "mop", "top", "cup", "pup", "bed", "red", "pen", "hen", "ten",
+      // Everyday & School
+      "book", "read", "play", "star", "tree", "bird", "fish", "ship", "frog", "boat",
+      "rain", "wind", "leaf", "seed", "grow", "kind", "help", "share", "learn", "smart",
+      // Filipino Vocabulary
+      "aso", "pusa", "bata", "guro", "araw", "buwan", "tala", "bahay", "aklat", "lapis",
+      "mesa", "silya", "tubig", "bundok", "ilog", "bayan", "masaya", "mabait", "sipag", "tulong"
+    ];
+
+    // Subjects with Term 1, Term 2, Term 3 metadata & grade complexity support
+    const SUBJECTS = {
+      math: {
+        name: "Mathematics",
+        icon: "🔢",
+        color: "#fff7ed",
+        desc: "Equal groups, operations, place value, fractions, measurement, and problem solving.",
+        goal: "Build number sense, reason step by step, and solve real-life problems.",
+        lessons: [
+          ["Equal Groups & Counting", "Make and identify equal groups of objects.", "Term 1"],
+          ["Addition & Subtraction Stories", "Combine and compare quantities in real situations.", "Term 1"],
+          ["Place Value & Number Patterns", "Read, compare, and continue number patterns.", "Term 2"],
+          ["Multiplication & Division Basics", "Group and share objects into equal parts.", "Term 2"],
+          ["Fractions, Shapes & Measurement", "Explore parts of a whole, shapes, and everyday measures.", "Term 3"]
+        ]
+      },
+      science: {
+        name: "Science",
+        icon: "🔬",
+        color: "#eff6ff",
+        desc: "Observe living and nonliving things, plants, weather, senses, and caring for nature.",
+        goal: "Observe carefully, compare characteristics, and explain simple science ideas.",
+        lessons: [
+          ["Living and Nonliving Things", "Identify living and nonliving things in our surroundings.", "Term 1"],
+          ["Our Five Senses", "Use sight, hearing, smell, taste, and touch to observe.", "Term 1"],
+          ["Parts of a Plant & Needs", "Explore roots, stems, leaves, flowers, and what plants need.", "Term 2"],
+          ["Weather & Sky Watch", "Observe sunny, rainy, windy, and cloudy days.", "Term 2"],
+          ["Caring for Our Environment", "Practice clean, safe, and eco-friendly habits every day.", "Term 3"]
+        ]
+      },
+      english: {
+        name: "English",
+        icon: "🔤",
+        color: "#fff7ed",
+        desc: "Letter sounds, rhyming words, naming words, action words, and clear sentences.",
+        goal: "Use sounds, vocabulary, and sentence patterns to read and express ideas clearly.",
+        lessons: [
+          ["Short Vowels & Phonics", "Listen to beginning and middle vowel sounds in words.", "Term 1"],
+          ["Rhyming & Word Families", "Spot words with matching ending sounds and patterns.", "Term 1"],
+          ["Naming Words (Nouns)", "Identify people, places, animals, and things.", "Term 2"],
+          ["Action Words (Verbs)", "Recognize action words that tell what someone does.", "Term 2"],
+          ["Telling & Asking Sentences", "Read and form complete sentences with proper end marks.", "Term 3"]
+        ]
+      },
+      filipino: {
+        name: "Filipino",
+        icon: "🇵🇭",
+        color: "#eff6ff",
+        desc: "Tunog ng titik, pagpapantig, pagbuo ng salita, pangngalan, at pangungusap.",
+        goal: "Makilala ang tunog at pantig, makabuo ng salita at pangungusap, at maunawaan ang binasa.",
+        lessons: [
+          ["Mga Tunog ng Titik", "Kilalanin ang tunog ng bawat titik sa alpabeto.", "Term 1"],
+          ["Pagpapantig ng Salita", "Hatiin nang wasto ang mga salita sa pantig.", "Term 1"],
+          ["Pagbuo ng Salita", "Pagsamahin ang mga pantig upang makabuo ng salita.", "Term 2"],
+          ["Pangngalan (Tao, Bagay, Hayop, Lugar)", "Tukuyin ang ngalan ng tao, hayop, bagay, at lugar.", "Term 2"],
+          ["Payak na Pangungusap", "Bumuo at unawain ang payak na pangungusap.", "Term 3"]
+        ]
+      }
+    };
+
+    const MATATAG_ITEMS = [
+      { code: "MATH-G1-T1-01", grade: "Grade 1", area: "Mathematics", term: "Term 1", text: "Group objects into sets of equal quantity and count up to 20.", status: "Completed" },
+      { code: "MATH-G2-T1-04", grade: "Grade 2", area: "Mathematics", term: "Term 1", text: "Represent multiplication as equal groups and repeated addition.", status: "In Progress" },
+      { code: "LANG-G2-T2-02", grade: "Grade 2", area: "Language", term: "Term 2", text: "Identify naming words (nouns) and use them in simple sentences.", status: "Not Started" },
+      { code: "FIL-G3-T1-03", grade: "Grade 3", area: "Filipino", term: "Term 1", text: "Nahahati nang wasto ang mga salita sa pantig at nababasa nang may unawa.", status: "Completed" },
+      { code: "SCI-G4-T2-01", grade: "Grade 4", area: "Science", term: "Term 2", text: "Classify materials based on observable properties and safe handling.", status: "In Progress" },
+      { code: "MATH-G6-T3-02", grade: "Grade 6", area: "Mathematics", term: "Term 3", text: "Solve multi-step real-life problems involving fractions, decimals, and ratios.", status: "Not Started" }
+    ];
+
+    const state = {
+      grade: "Grade 2",
+      teacher: "Teacher Mara",
+      userRole: "Guest",
+      userName: "Guest",
+      stars: 0,
+      done: 0,
+      correct: 0,
+      attempts: 0,
+      lessons: {},
+      classes: [
+        { id: "CLS-G2-A", name: "Grade 2 - Sampaguita", grade: "Grade 2" },
+        { id: "CLS-G4-A", name: "Grade 4 - Narra", grade: "Grade 4" }
+      ],
+      students: [
+        { id: "STU-101", name: "Ana Santos", classId: "CLS-G2-A", present: false, time: "" },
+        { id: "STU-102", name: "Marco Reyes", classId: "CLS-G2-A", present: false, time: "" }
+      ],
+      materials: [],
+      fluency: [],
+      curriculum: MATATAG_ITEMS
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem("taraHubMatatagState") || "{}");
+      Object.assign(state, saved);
+      if (!Array.isArray(state.classes) || !state.classes.length) {
+        state.classes = [{ id: "CLS-G2-A", name: "Grade 2 - Sampaguita", grade: "Grade 2" }];
+      }
+      if (!Array.isArray(state.students)) state.students = [];
+      if (!Array.isArray(state.materials)) state.materials = [];
+      if (!Array.isArray(state.fluency)) state.fluency = [];
+      if (!Array.isArray(state.curriculum) || !state.curriculum.length) state.curriculum = MATATAG_ITEMS;
+    } catch (err) {
+      console.warn("Storage load notice:", err);
+    }
+
+    let currentSubject = "math";
+    let currentLesson = 0;
+    let currentActivity = 0;
+    let lessonTermFilter = "ALL";
+    let igCount = 0;
+    let igCurrent = null;
+    let igHistory = new Set();
+    let penMode = "pen";
+    let readSeconds = 0;
+    let readTimer = null;
+
+    function saveState() {
+      try {
+        localStorage.setItem("taraHubMatatagState", JSON.stringify(state));
+      } catch (err) {
+        console.warn("Storage save notice:", err);
+      }
+      updateStats();
+    }
+
+    function gradeScaleFactor() {
+      const map = { "Grade 1": 1, "Grade 2": 2, "Grade 3": 3, "Grade 4": 4, "Grade 5": 5, "Grade 6": 6 };
+      return map[state.grade] || 2;
+    }
+
+    function showPage(pageId) {
+      try {
+        document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+        const target = $("page-" + pageId);
+        if (target) target.classList.add("active");
+        document.querySelectorAll(".navbtn").forEach((b) => b.classList.toggle("active", b.dataset.page === pageId));
+
+        if (pageId === "curriculum") renderCurriculum();
+        if (pageId === "teacher") refreshTeacherPage();
+        if (pageId === "attendance") {
+          populateClassSelects();
+          renderStudentQrCards();
+        }
+        if (pageId === "reading") renderReadingPassage();
+        if (pageId === "board") initBoard();
+        if (pageId === "progress") refreshProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        console.error("Navigation error:", err);
+      }
+    }
+
+    function subjectCardHtml(key) {
+      const s = SUBJECTS[key];
+      return `
+        <button class="card subject-card" onclick="openSubject('${escapeAttr(key)}')">
+          <div class="subject-icon" style="background:${escapeAttr(s.color)}">${s.icon}</div>
+          <h3>${escapeHtml(s.name)}</h3>
+          <p>${escapeHtml(s.desc)}</p>
+          <span class="arrow">→</span>
+        </button>
+      `;
+    }
+
+    function renderSubjects() {
+      const keys = Object.keys(SUBJECTS);
+      if ($("homeSubjects")) $("homeSubjects").innerHTML = keys.map(subjectCardHtml).join("");
+      if ($("allSubjects")) $("allSubjects").innerHTML = keys.map(subjectCardHtml).join("");
+    }
+
+    function openSubject(key) {
+      currentSubject = SUBJECTS[key] ? key : "math";
+      lessonTermFilter = "ALL";
+      syncTermButtons();
+      if ($("lessonGradeSelect")) $("lessonGradeSelect").value = state.grade || "Grade 2";
+      loadLesson(0);
+      showPage("lesson");
+    }
+
+    function changeLessonGrade(newGrade) {
+      state.grade = newGrade;
+      saveState();
+      syncHeaderBadges();
+      loadLesson(currentLesson);
+      toast("Switched to " + newGrade + " complexity");
+    }
+
+    function setLessonTermFilter(term) {
+      lessonTermFilter = term;
+      syncTermButtons();
+      rebuildLessonPicker();
+      const s = SUBJECTS[currentSubject];
+      if (!s) return;
+      const matchingIndex = s.lessons.findIndex((l) => term === "ALL" || l[2] === term);
+      if (matchingIndex >= 0) {
+        loadLesson(matchingIndex);
+      } else {
+        toast("No lessons in " + term + " for this subject; showing all.");
+        lessonTermFilter = "ALL";
+        syncTermButtons();
+        rebuildLessonPicker();
+        loadLesson(0);
+      }
+    }
+
+    function syncTermButtons() {
+      document.querySelectorAll(".term-chip").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.term === lessonTermFilter);
+      });
+    }
+
+    function rebuildLessonPicker() {
+      const picker = $("lessonPicker");
+      const s = SUBJECTS[currentSubject];
+      if (!picker || !s) return;
+      picker.innerHTML = s.lessons
+        .map((l, idx) => {
+          if (lessonTermFilter !== "ALL" && l[2] !== lessonTermFilter) return "";
+          return `<option value="${idx}" ${idx === currentLesson ? "selected" : ""}>${escapeHtml(l[2])} • ${escapeHtml(l[0])}</option>`;
+        })
+        .join("");
+    }
+
+    function loadLesson(index) {
+      const s = SUBJECTS[currentSubject] || SUBJECTS.math;
+      currentLesson = Math.max(0, Math.min(index, s.lessons.length - 1));
+      currentActivity = 0;
+      const lesson = s.lessons[currentLesson];
+      const termLabel = lesson[2] || "Term 1";
+
+      if ($("lessonEyebrow")) $("lessonEyebrow").textContent = `${s.name.toUpperCase()} • ${state.grade.toUpperCase()} • ${termLabel.toUpperCase()}`;
+      if ($("lessonTitle")) $("lessonTitle").textContent = lesson[0];
+      if ($("lessonDesc")) $("lessonDesc").textContent = lesson[1];
+      if ($("lessonGoal")) $("lessonGoal").textContent = s.goal;
+      if ($("lessonStars")) $("lessonStars").textContent = (state.lessons[currentSubject + "-" + currentLesson] || 0) + " ⭐";
+      if ($("lessonTags")) {
+        $("lessonTags").innerHTML = `
+          <span class="tag">${escapeHtml(state.grade)}</span>
+          <span class="tag term">${escapeHtml(termLabel)}</span>
+          <span class="tag">${escapeHtml(s.name)}</span>
+        `;
+      }
+      rebuildLessonPicker();
+      renderActivityTabs();
+      renderActivity();
+    }
+
+    const ACTIVITY_NAMES = [
+      "Learn It", "Quiz", "Match It", "Sort It", "Word Builder",
+      "Find the Mistake", "Real-Life Task", "Quick Check", "More Practice", "Teach Back"
+    ];
+
+    function renderActivityTabs() {
+      if ($("activityTabs")) {
+        $("activityTabs").innerHTML = ACTIVITY_NAMES
+          .map((name, i) => `<button class="tab ${i === currentActivity ? "active" : ""}" onclick="goActivity(${i})">${i + 1}. ${escapeHtml(name)}</button>`)
+          .join("");
+      }
+      if ($("activityCount")) $("activityCount").textContent = `Activity ${currentActivity + 1} of 10`;
+      if ($("activityHeading")) $("activityHeading").textContent = ACTIVITY_NAMES[currentActivity];
+      if ($("activityProgress")) $("activityProgress").style.width = ((currentActivity + 1) * 10) + "%";
+    }
+
+    function goActivity(i) {
+      currentActivity = i;
+      renderActivityTabs();
+      renderActivity();
+    }
+
+    function prevActivity() {
+      if (currentActivity > 0) goActivity(currentActivity - 1);
+      else if (currentLesson > 0) loadLesson(currentLesson - 1);
+    }
+
+    function nextActivity() {
+      if (currentActivity < 9) goActivity(currentActivity + 1);
+      else if (currentLesson < SUBJECTS[currentSubject].lessons.length - 1) {
+        loadLesson(currentLesson + 1);
+        toast("Moved to next lesson!");
+      } else {
+        goActivity(0);
+        toast("Completed this subject! Back to Learn It.");
+      }
+    }
+
+    function toggleTeachingFullscreen() {
+      const card = document.querySelector("#page-lesson .lesson-card");
+      const btn = $("teachFullscreenBtn");
+      if (!card) return;
+      const isFull = card.classList.toggle("teaching-fullscreen");
+      if (btn) {
+        btn.textContent = isFull ? "🗗 Exit Full Screen" : "🖥️ Full Screen Teaching";
+        btn.className = isFull ? "btn orange" : "btn soft";
+      }
+      toast(isFull ? "Full Screen Teaching Mode ON" : "Exited Full Screen Teaching Mode");
+    }
+
+    function getLearnExamples(subjectKey, lessonTitle) {
+      const g = gradeScaleFactor();
+      const safeTitle = escapeHtml(lessonTitle || "Lesson");
+      if (subjectKey === "math") {
+        const a = g + 1;
+        const b = g + 2;
+        return [
+          { label: "Example 1 • Equal Groups", main: `${a} groups of ${b} = ${a * b}`, note: `Count ${b} objects in each of the ${a} groups to get ${a * b}.` },
+          { label: "Example 2 • Addition", main: `${a * g} + ${b} = ${a * g + b}`, note: `Start at ${a * g} and count forward ${b} steps.` },
+          { label: "Example 3 • Sharing", main: `${g * 4} items ÷ 2 = ${g * 2} each`, note: `Split ${g * 4} items equally into 2 groups.` }
+        ];
+      }
+      if (subjectKey === "science") {
+        return [
+          { label: "Example 1 • Living", main: "🌱 Seed & Puppy", note: "Living things grow, breathe, and need food and water." },
+          { label: "Example 2 • Nonliving", main: "🪨 Stone & Pencil", note: "Nonliving things do not grow on their own." },
+          { label: "Example 3 • Class Focus", main: `🔎 ${safeTitle}`, note: `Observe ${safeTitle.toLowerCase()} around your classroom and home.` }
+        ];
+      }
+      if (subjectKey === "filipino") {
+        return [
+          { label: "Halimbawa 1 • Pantig", main: "ba - ta (2) • pa - a - ra - lan (4)", note: "Bigkasin nang malinaw ang bawat pantig." },
+          { label: "Halimbawa 2 • Salita", main: "aklat • araw • guro", note: "Basahin ang mga pantig at buuin ang salita." },
+          { label: "Halimbawa 3 • Pangungusap", main: "Masipag mag-aral ang mga mag-aaral.", note: "May buong diwa at wastong bantas sa dulo." }
+        ];
+      }
+      return [
+        { label: "Example 1 • Rhyming", main: "sun • run • fun", note: "These words end with the same -un sound." },
+        { label: "Example 2 • Nouns", main: "teacher • school • park", note: "Nouns name a person, place, animal, or thing." },
+        { label: "Example 3 • Sentence", main: "The bright sun helps plants grow.", note: "Starts with a capital letter and ends with a period." }
+      ];
+    }
+
+    function makeGradeQuestion() {
+      const g = gradeScaleFactor();
+      if (currentSubject === "math") {
+        const a = g * 2 + 1;
+        const b = g + 2;
+        const ans = a + b;
+        return {
+          q: `(${state.grade}) What is ${a} + ${b}?`,
+          opts: [String(ans), String(ans + 1), String(Math.max(1, ans - 1)), String(ans + 2)],
+          ans: 0,
+          why: `${a} + ${b} = ${ans}.`
+        };
+      }
+      if (currentSubject === "filipino") {
+        const items = [
+          ["Alin ang may dalawang pantig?", ["bata", "paaralan", "kalabaw", "masayahin"], 0, "Ang ba-ta ay may 2 pantig."],
+          ["Alin ang ngalan ng lugar?", ["paaralan", "tumakbo", "mabilis", "masaya"], 0, "Ang paaralan ay ngalan ng lugar."]
+        ];
+        const pick = items[g % items.length];
+        return { q: `(${state.grade}) ${pick[0]}`, opts: pick[1], ans: pick[2], why: pick[3] };
+      }
+      if (currentSubject === "science") {
+        return {
+          q: `(${state.grade}) Which of these is a living thing?`,
+          opts: ["Potted plant", "Plastic cup", "Wooden ruler", "Metal spoon"],
+          ans: 0,
+          why: "A plant is living because it grows and needs water and sunlight."
+        };
+      }
+      return {
+        q: `(${state.grade}) Which word rhymes with "cat"?`,
+        opts: ["hat", "book", "cup", "tree"],
+        ans: 0,
+        why: '"Cat" and "hat" rhyme because they share the -at ending sound.'
+      };
+    }
+
+    function renderActivity() {
+      const box = $("activityContent");
+      if (!box) return;
+      const s = SUBJECTS[currentSubject] || SUBJECTS.math;
+      const l = s.lessons[currentLesson] || s.lessons[0];
+
+      if (currentActivity === 0) {
+        const examples = getLearnExamples(currentSubject, l[0]);
+        box.innerHTML = `
+          <h3>🌟 ${escapeHtml(l[0])} <span class="tag term">${escapeHtml(l[2])}</span></h3>
+          <p style="font-size:18px;color:#334155">${escapeHtml(l[1])} (${escapeHtml(state.grade)})</p>
+          <div class="example-grid">
+            ${examples.map((ex) => `
+              <div class="example-card">
+                <div class="ex-label">${escapeHtml(ex.label)}</div>
+                <div class="ex-main">${escapeHtml(ex.main)}</div>
+                <div class="ex-note">${escapeHtml(ex.note)}</div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="btnrow">
+            <button class="btn soft" onclick="speak('${escapeAttr(l[1])}')">🔊 Read Aloud</button>
+            <button class="btn orange" onclick="toggleChat('Give me 2 more examples for ${escapeAttr(l[0])} in ${escapeAttr(state.grade)}')">Ask TARA for More Examples</button>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentActivity === 2) {
+        const pairs = [["🐱", "cat"], ["☀️", "sun"], ["📘", "book"]];
+        const tiles = pairs.flatMap((p, idx) => p.map((val) => ({ val, idx }))).sort(() => Math.random() - 0.5);
+        window.matchPickFirst = null;
+        window.matchFoundCount = 0;
+        box.innerHTML = `
+          <h3>🧠 Match the Pairs</h3>
+          <p>Tap two matching cards.</p>
+          <div class="match-grid">
+            ${tiles.map((t) => `<button class="match-item" data-idx="${t.idx}" onclick="handleMatchCard(this)">${escapeHtml(t.val)}</button>`).join("")}
+          </div>
+          <p id="matchMsg" class="smallmuted" style="margin-top:10px">0 / 3 pairs matched</p>
+        `;
+        return;
+      }
+
+      if (currentActivity === 4) {
+        const word = WORD_WHEEL_WORDS[Math.floor(Math.random() * 25)];
+        const scrambled = word.split("").sort(() => Math.random() - 0.5);
+        window.builtLetters = "";
+        window.targetWord = word;
+        box.innerHTML = `
+          <h3>🔤 Word Builder</h3>
+          <p>Tap letters in order to spell: <strong>${escapeHtml(word.toUpperCase())}</strong></p>
+          <div class="word-slots" id="wbSlots">${word.split("").map(() => `<div class="slot">_</div>`).join("")}</div>
+          <div class="btnrow" style="justify-content:center">
+            ${scrambled.map((ch) => `<button class="tile" onclick="tapBuilderLetter(this,'${escapeAttr(ch)}')">${escapeHtml(ch.toUpperCase())}</button>`).join("")}
+          </div>
+          <div class="btnrow">
+            <button class="btn soft small" onclick="checkBuiltWord()">Check Word</button>
+            <button class="btn gray small" onclick="renderActivity()">New Word</button>
+          </div>
+          <div class="feedback" id="wbFeedback"></div>
+        `;
+        return;
+      }
+
+      if (currentActivity === 9) {
+        box.innerHTML = `
+          <h3>🧑‍🏫 Teach It Back</h3>
+          <p>Write one thing you learned about <strong>${escapeHtml(l[0])}</strong>:</p>
+          <textarea class="field" id="teachBackText" rows="3" placeholder="I learned that..."></textarea>
+          <div class="btnrow"><button class="btn orange" onclick="saveTeachBack()">Save Reflection (+1 ⭐)</button></div>
+        `;
+        return;
+      }
+
+      const q = makeGradeQuestion();
+      box.innerHTML = `
+        <h3>🎯 ${escapeHtml(ACTIVITY_NAMES[currentActivity])}</h3>
+        <div class="question">${escapeHtml(q.q)}</div>
+        <div class="answers">
+          ${q.opts.map((opt, i) => `<button class="answer" onclick="gradeChoice(this,${i},${q.ans},'${escapeAttr(q.why)}')">${String.fromCharCode(65 + i)}. ${escapeHtml(opt)}</button>`).join("")}
+        </div>
+        <div class="feedback" id="lessonFeedback"></div>
+        <div class="btnrow">
+          <button class="btn soft small" onclick="renderActivity()">↻ New Question</button>
+          <button class="btn gray small" onclick="toggleChat('Give me a hint for: ${escapeAttr(q.q)}')">💡 Hint</button>
+        </div>
+      `;
+    }
+
+    function gradeChoice(btn, chosen, correct, why) {
+      const parent = btn.parentElement;
+      if (!parent) return;
+      const buttons = parent.querySelectorAll(".answer");
+      buttons.forEach((b) => (b.disabled = true));
+      state.attempts += 1;
+      const fb = $("lessonFeedback");
+      if (chosen === correct) {
+        btn.classList.add("correct");
+        state.correct += 1;
+        state.stars += 1;
+        state.done += 1;
+        const k = currentSubject + "-" + currentLesson;
+        state.lessons[k] = (state.lessons[k] || 0) + 1;
+        if ($("lessonStars")) $("lessonStars").textContent = state.lessons[k] + " ⭐";
+        if (fb) { fb.className = "feedback show good"; fb.textContent = "🌟 Great job! " + why; }
+      } else {
+        btn.classList.add("wrong");
+        if (buttons[correct]) buttons[correct].classList.add("correct");
+        if (fb) { fb.className = "feedback show bad"; fb.textContent = "Nice try! " + why; }
+      }
+      saveState();
+    }
+
+    function handleMatchCard(el) {
+      if (el.classList.contains("done")) return;
+      if (!window.matchPickFirst) {
+        window.matchPickFirst = el;
+        el.classList.add("selected");
+        return;
+      }
+      const first = window.matchPickFirst;
+      if (first === el) return;
+      if (first.dataset.idx === el.dataset.idx) {
+        first.classList.remove("selected");
+        first.classList.add("done");
+        el.classList.add("done");
+        window.matchFoundCount += 1;
+        if ($("matchMsg")) $("matchMsg").textContent = window.matchFoundCount + " / 3 pairs matched";
+        if (window.matchFoundCount === 3) {
+          state.stars += 2;
+          state.done += 1;
+          saveState();
+          toast("All 3 pairs matched! +2 ⭐");
+        }
+      } else {
+        first.classList.remove("selected");
+        if ($("matchMsg")) $("matchMsg").textContent = "Not a match—try again!";
+      }
+      window.matchPickFirst = null;
+    }
+
+    function tapBuilderLetter(el, ch) {
+      if (el.disabled) return;
+      el.disabled = true;
+      el.style.opacity = "0.4";
+      window.builtLetters = (window.builtLetters || "") + ch;
+      const slots = $("wbSlots")?.children;
+      if (slots) {
+        for (let i = 0; i < slots.length; i++) {
+          slots[i].textContent = window.builtLetters[i] ? window.builtLetters[i].toUpperCase() : "_";
+        }
+      }
+    }
+
+    function checkBuiltWord() {
+      const fb = $("wbFeedback");
+      if (!fb) return;
+      if ((window.builtLetters || "").toLowerCase() === (window.targetWord || "").toLowerCase()) {
+        fb.className = "feedback show good";
+        fb.textContent = "🎉 Awesome! You spelled " + window.targetWord.toUpperCase() + "!";
+        state.stars += 1;
+        state.done += 1;
+        saveState();
+      } else {
+        fb.className = "feedback show bad";
+        fb.textContent = "Try another letter order or click New Word.";
+      }
+    }
+
+    function saveTeachBack() {
+      const val = ($("teachBackText")?.value || "").trim();
+      if (!val) { toast("Please write a short reflection first."); return; }
+      state.stars += 1;
+      state.done += 1;
+      saveState();
+      toast("Reflection saved! +1 ⭐");
+    }
+
+    // Games & Expanded Word Wheel
+    function startQuick(type) {
+      showPage("games");
+      const area = $("gameArea");
+      if (!area) return;
+
+      if (type === "wheel") {
+        area.innerHTML = `
+          <h3 style="margin:0 0 6px;font-size:20px;font-weight:900;color:var(--blue-dark)">🎡 Word Wheel (${WORD_WHEEL_WORDS.length} Words)</h3>
+          <p class="smallmuted">Spin to get an English or Filipino word and read it aloud.</p>
+          <div id="wheelDisplay" style="font-size:44px;font-weight:900;text-align:center;padding:24px;margin:14px 0;border-radius:18px;background:linear-gradient(135deg,#eff6ff,#fff7ed);color:var(--blue-dark);border:2px solid #bfdbfe">READY TO SPIN</div>
+          <div style="text-align:center">
+            <button class="btn orange" style="font-size:16px;padding:13px 22px" onclick="spinWordWheel()">🎡 SPIN WORD WHEEL</button>
+            <button class="btn soft" style="margin-left:8px" onclick="speakWheelWord()">🔊 Pronounce</button>
+          </div>
+          <p id="wheelHint" class="smallmuted" style="text-align:center;margin-top:12px"></p>
+        `;
+      } else if (type === "memory") {
+        const items = [["🐱", "cat"], ["☀️", "sun"], ["📘", "book"], ["🐶", "dog"]].flatMap((p, idx) => p.map((val) => ({ val, idx }))).sort(() => Math.random() - 0.5);
+        window.memFirst = null;
+        window.memFound = 0;
+        area.innerHTML = `
+          <h3 style="margin:0 0 8px;font-size:20px;font-weight:900;color:var(--blue-dark)">🧠 Memory Match</h3>
+          <div class="match-grid">${items.map((x) => `<button class="match-item" data-idx="${x.idx}" onclick="memPick(this)">${escapeHtml(x.val)}</button>`).join("")}</div>
+          <p id="memStatus" class="smallmuted" style="margin-top:10px">0 / 4 pairs found</p>
+        `;
+      } else {
+        const q = makeGradeQuestion();
+        area.innerHTML = `
+          <h3 style="margin:0 0 8px;font-size:20px;font-weight:900;color:var(--blue-dark)">🎯 Quick Quiz</h3>
+          <div class="question">${escapeHtml(q.q)}</div>
+          <div class="answers">${q.opts.map((o, i) => `<button class="answer" onclick="gradeChoice(this,${i},${q.ans},'${escapeAttr(q.why)}')">${String.fromCharCode(65 + i)}. ${escapeHtml(o)}</button>`).join("")}</div>
+          <div class="feedback" id="lessonFeedback"></div>
+          <div class="btnrow"><button class="btn soft small" onclick="startQuick('quiz')">Next Question</button></div>
+        `;
+      }
+    }
+
+    function spinWordWheel() {
+      const word = WORD_WHEEL_WORDS[Math.floor(Math.random() * WORD_WHEEL_WORDS.length)];
+      window.currentWheelWord = word;
+      if ($("wheelDisplay")) $("wheelDisplay").textContent = word.toUpperCase();
+      if ($("wheelHint")) $("wheelHint").textContent = `Letters: ${word.length} • Say each sound clearly and read the word!`;
+      state.stars += 1;
+      state.done += 1;
+      saveState();
+      speak(word);
+    }
+
+    function speakWheelWord() {
+      if (window.currentWheelWord) speak(window.currentWheelWord);
+      else toast("Spin the wheel first!");
+    }
+
+    function memPick(el) {
+      if (el.classList.contains("done")) return;
+      if (!window.memFirst) { window.memFirst = el; el.classList.add("selected"); return; }
+      const first = window.memFirst;
+      if (first === el) return;
+      if (first.dataset.idx === el.dataset.idx) {
+        first.classList.remove("selected"); first.classList.add("done"); el.classList.add("done");
+        window.memFound += 1;
+        if ($("memStatus")) $("memStatus").textContent = window.memFound + " / 4 pairs found";
+        if (window.memFound === 4) { state.stars += 2; saveState(); toast("Memory Match complete! +2 ⭐"); }
+      } else {
+        first.classList.remove("selected");
+      }
+      window.memFirst = null;
+    }
+
+    // Smart Activity Generator
+    const IG_TOPICS = {
+      Mathematics: ["Equal groups", "Addition", "Subtraction", "Place value", "Fractions"],
+      English: ["Rhyming words", "Nouns", "Verbs", "Sentences", "Phonics"],
+      Filipino: ["Pantig", "Pangngalan", "Pangungusap", "Salitang magkatugma"],
+      Science: ["Living & nonliving", "Five senses", "Plants", "Weather", "Environment"],
+      Reading: ["Letter sounds", "Syllables", "Word reading", "Comprehension"],
+      GMRC: ["Respect", "Honesty", "Kindness", "Responsibility"],
+      Makabansa: ["Family", "School", "Community helpers", "Symbols"]
+    };
+
+    function updateIGTopics() {
+      const sub = $("igSubject")?.value || "Mathematics";
+      const list = IG_TOPICS[sub] || ["General topic"];
+      if ($("igTopicList")) $("igTopicList").innerHTML = list.map((t) => `<option value="${escapeAttr(t)}"></option>`).join("");
+      if ($("igTopic")) $("igTopic").value = list[0];
+    }
+
+    function startActivityGenerator() {
+      const sub = $("igSubject")?.value || "Mathematics";
+      const grade = $("igGrade")?.value || state.grade;
+      const topic = ($("igTopic")?.value || "Practice").trim();
+      igCount += 1;
+      const prevSub = currentSubject;
+      currentSubject = sub.toLowerCase().startsWith("math") ? "math" : sub.toLowerCase().startsWith("fil") ? "filipino" : sub.toLowerCase().startsWith("sci") ? "science" : "english";
+      const baseQ = makeGradeQuestion();
+      currentSubject = prevSub;
+      igCurrent = { ...baseQ, sub, grade, topic, selected: "" };
+      if ($("igActivityTitle")) $("igActivityTitle").textContent = `${sub} • ${topic}`;
+      if ($("igCounter")) $("igCounter").textContent = `Activity ${igCount}`;
+      if ($("igProgress")) $("igProgress").style.width = ((igCount % 10) * 10 || 100) + "%";
+      if ($("igActivity")) {
+        $("igActivity").innerHTML = `
+          <span class="tag">${escapeHtml(grade)}</span>
+          <span class="tag term">${escapeHtml(sub)}</span>
+          <div class="question">${escapeHtml(igCurrent.q)}</div>
+          <div class="answers">
+            ${igCurrent.opts.map((o, i) => `<button class="answer" onclick="pickIgOpt(this,'${escapeAttr(o)}')">${String.fromCharCode(65 + i)}. ${escapeHtml(o)}</button>`).join("")}
+          </div>
+          <div class="feedback" id="igFeedback"></div>
+        `;
+      }
+    }
+
+    function pickIgOpt(btn, val) {
+      document.querySelectorAll("#igActivity .answer").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      if (igCurrent) igCurrent.selected = val;
+    }
+
+    function checkIGAnswer() {
+      if (!igCurrent || !igCurrent.selected) { toast("Select an answer first."); return; }
+      const correctVal = igCurrent.opts[igCurrent.ans];
+      const ok = igCurrent.selected === correctVal;
+      const fb = $("igFeedback");
+      state.attempts += 1;
+      if (ok) { state.correct += 1; state.stars += 1; state.done += 1; }
+      saveState();
+      if (fb) {
+        fb.className = "feedback show " + (ok ? "good" : "bad");
+        fb.textContent = ok ? "🌟 Correct! " + igCurrent.why : "Try again! Answer: " + correctVal + " — " + igCurrent.why;
+      }
+    }
+
+    function nextIGActivity() { startActivityGenerator(); }
+
+    function generateIGBatch(n) {
+      const out = [];
+      for (let i = 0; i < n; i++) {
+        const q = makeGradeQuestion();
+        out.push(`<li><strong>${escapeHtml(q.q)}</strong> <span class="smallmuted">(Answer: ${escapeHtml(q.opts[q.ans])})</span></li>`);
+      }
+      if ($("igBatch")) $("igBatch").innerHTML = `<ol>${out.join("")}</ol>`;
+      toast(`Generated ${n} questions`);
+    }
+
+    function resetIGHistory() {
+      igHistory.clear();
+      igCount = 0;
+      if ($("igBatch")) $("igBatch").innerHTML = "";
+      toast("Generator history reset");
+    }
+
+    // Reading & Fluency
+    const PASSAGES = {
+      en: "Mia and Leo walk to school early in the morning. They see green trees, bright birds, and helpful friends along the way.",
+      fil: "Maagang pumasok sa paaralan sina Mia at Leo. Nakita nila ang luntiang puno, masasayang ibon, at matulunging kamag-aral."
+    };
+
+    function renderReadingPassage() {
+      const lang = $("readLang")?.value || "en";
+      const gr = $("readGrade")?.value || state.grade;
+      if ($("readingPassageBox")) {
+        $("readingPassageBox").textContent = `[${gr}] ${PASSAGES[lang] || PASSAGES.en}`;
+      }
+      renderFluencyTable();
+    }
+
+    function speakCurrentPassage() {
+      const lang = $("readLang")?.value || "en";
+      speak(PASSAGES[lang] || PASSAGES.en);
+    }
+
+    function startReadingTimer() {
+      clearInterval(readTimer);
+      readSeconds = 0;
+      readTimer = setInterval(() => {
+        readSeconds += 1;
+        if ($("readTimerText")) $("readTimerText").textContent = readSeconds + "s";
+      }, 1000);
+    }
+
+    function stopReadingTimer() {
+      clearInterval(readTimer);
+    }
+
+    function saveFluencyRecord() {
+      stopReadingTimer();
+      const correctW = Math.max(0, Number($("readCorrectWords")?.value || 0));
+      const errorW = Math.max(0, Number($("readErrorWords")?.value || 0));
+      const comp = Math.max(0, Math.min(100, Number($("readCompScore")?.value || 0)));
+      const totalW = correctW + errorW;
+      const mins = Math.max(readSeconds / 60, 0.25);
+      const wpm = Math.round(correctW / mins);
+      const acc = totalW ? Math.round((correctW / totalW) * 100) : 100;
+
+      state.fluency.unshift({
+        learner: state.userName || "Learner",
+        wpm,
+        acc,
+        comp,
+        date: new Date().toLocaleDateString()
+      });
+      state.stars += 1;
+      state.done += 1;
+      saveState();
+      renderFluencyTable();
+      toast(`Saved fluency: ${wpm} WPM • ${acc}% accuracy`);
+    }
+
+    function renderFluencyTable() {
+      const tbody = $("fluencyTableBody");
+      const sum = $("fluencySummary");
+      if (!tbody) return;
+      if (!state.fluency.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="smallmuted">No reading records saved yet.</td></tr>`;
+        if (sum) sum.textContent = "Record a reading session to see WPM and accuracy.";
+        return;
+      }
+      const avgWpm = Math.round(state.fluency.reduce((a, b) => a + b.wpm, 0) / state.fluency.length);
+      const avgAcc = Math.round(state.fluency.reduce((a, b) => a + b.acc, 0) / state.fluency.length);
+      if (sum) sum.textContent = `Sessions: ${state.fluency.length} • Average WPM: ${avgWpm} • Average Accuracy: ${avgAcc}%`;
+      tbody.innerHTML = state.fluency
+        .slice(0, 8)
+        .map((r) => `<tr><td>${escapeHtml(r.learner)}</td><td>${r.wpm}</td><td>${r.acc}%</td><td>${r.comp}%</td></tr>`)
+        .join("");
+    }
+
+    // MATATAG Curriculum Explorer
+    function renderCurriculum() {
+      const tbody = $("curriculumTableBody");
+      if (!tbody) return;
+      const gFilter = $("curGradeFilter")?.value || "ALL";
+      const aFilter = $("curAreaFilter")?.value || "ALL";
+      const tFilter = $("curTermFilter")?.value || "ALL";
+      const kw = ($("curSearch")?.value || "").trim().toLowerCase();
+
+      const filtered = state.curriculum.filter((item) => {
+        if (gFilter !== "ALL" && item.grade !== gFilter) return false;
+        if (aFilter !== "ALL" && item.area !== aFilter) return false;
+        if (tFilter !== "ALL" && item.term !== tFilter) return false;
+        if (kw && !(item.code + " " + item.text + " " + item.area).toLowerCase().includes(kw)) return false;
+        return true;
+      });
+
+      if ($("curSummary")) {
+        const doneCount = filtered.filter((x) => x.status === "Completed").length;
+        $("curSummary").textContent = `${filtered.length} competencies • ${doneCount} completed`;
+      }
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="smallmuted">No matching competencies.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((item) => `
+          <tr>
+            <td><strong>${escapeHtml(item.code)}</strong></td>
+            <td>${escapeHtml(item.grade)} • ${escapeHtml(item.area)} • <span class="tag term">${escapeHtml(item.term)}</span></td>
+            <td>${escapeHtml(item.text)}</td>
+            <td>
+              <select class="field" style="width:auto;padding:5px 8px;font-size:12px" onchange="updateCurStatus('${escapeAttr(item.code)}',this.value)">
+                <option ${item.status === "Not Started" ? "selected" : ""}>Not Started</option>
+                <option ${item.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                <option ${item.status === "Completed" ? "selected" : ""}>Completed</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn soft small" onclick="sendCompToGenerator('${escapeAttr(item.area)}','${escapeAttr(item.grade)}','${escapeAttr(item.text)}')">Practice</button>
+            </td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function updateCurStatus(code, status) {
+      const found = state.curriculum.find((c) => c.code === code);
+      if (found) {
+        found.status = status;
+        saveState();
+        renderCurriculum();
+        toast("Updated " + code + " to " + status);
+      }
+    }
+
+    function sendCompToGenerator(area, grade, text) {
+      showPage("generator");
+      if ($("igSubject")) {
+        const opt = [...$("igSubject").options].find((o) => o.value.toLowerCase().includes(area.toLowerCase()));
+        if (opt) $("igSubject").value = opt.value;
+      }
+      if ($("igGrade")) $("igGrade").value = grade;
+      if ($("igTopic")) $("igTopic").value = text.slice(0, 60);
+      startActivityGenerator();
+    }
+
+    function exportCurriculumJson() {
+      const blob = new Blob([JSON.stringify(state.curriculum, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "matatag-curriculum.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function exportCurriculumExcel() {
+      if (typeof XLSX === "undefined") { toast("Excel library not loaded."); return; }
+      const ws = XLSX.utils.json_to_sheet(state.curriculum);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "MATATAG");
+      XLSX.writeFile(wb, "matatag-curriculum.xlsx");
+    }
+
+    function importCurriculumFile(ev) {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          if (file.name.endsWith(".json")) {
+            const parsed = JSON.parse(e.target.result);
+            if (Array.isArray(parsed) && parsed.length) {
+              state.curriculum = parsed;
+              saveState();
+              renderCurriculum();
+              toast("Imported " + parsed.length + " curriculum items!");
+            }
+          } else if (typeof XLSX !== "undefined") {
+            const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            if (rows.length) {
+              state.curriculum = rows.map((r, i) => ({
+                code: r.code || r.Code || "CUR-" + (i + 1),
+                grade: r.grade || r.Grade || "Grade 2",
+                area: r.area || r.Area || "Mathematics",
+                term: r.term || r.Term || "Term 1",
+                text: r.text || r.Competency || r.Text || "Competency item",
+                status: r.status || "Not Started"
+              }));
+              saveState();
+              renderCurriculum();
+              toast("Imported " + state.curriculum.length + " items from Excel!");
+            }
+          }
+        } catch (err) {
+          toast("Could not read curriculum file.");
+        }
+      };
+      if (file.name.endsWith(".json")) reader.readAsText(file);
+      else reader.readAsArrayBuffer(file);
+    }
+
+    // Teacher Classes & PPT/PDF/DOCX Materials Upload
+    function createClassRoom() {
+      const name = ($("newClassName")?.value || "").trim();
+      const grade = $("newClassGrade")?.value || "Grade 2";
+      const tName = ($("teacherNameInput")?.value || "").trim();
+      if (tName) state.teacher = tName;
+      if (!name) { toast("Enter a class or section name."); return; }
+      const id = "CLS-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+      state.classes.push({ id, name, grade });
+      if ($("newClassName")) $("newClassName").value = "";
+      saveState();
+      populateClassSelects();
+      refreshTeacherPage();
+      toast("Created class: " + name);
+    }
+
+    function populateClassSelects() {
+      const selects = ["matClassSelect", "manualStudentClass", "qrClassFilter", "loginStudentClass"];
+      selects.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        const isFilter = id === "qrClassFilter";
+        el.innerHTML =
+          (isFilter ? `<option value="ALL">All Classes</option>` : "") +
+          state.classes.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(c.name)} (${escapeHtml(c.grade)})</option>`).join("");
+      });
+    }
+
+    function uploadClassMaterial() {
+      const file = $("matFileInput")?.files?.[0];
+      const classId = $("matClassSelect")?.value || state.classes[0]?.id;
+      if (!file) { toast("Choose a .ppt, .pptx, .pdf, .doc, or .docx file first."); return; }
+      const cls = state.classes.find((c) => c.id === classId);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.materials.unshift({
+          id: "MAT-" + Date.now(),
+          name: file.name,
+          sizeKb: Math.max(1, Math.round(file.size / 1024)),
+          classId,
+          className: cls ? cls.name : "General Class",
+          dataUrl: e.target.result
+        });
+        if ($("matFileInput")) $("matFileInput").value = "";
+        saveState();
+        renderMaterialsList();
+        toast("Uploaded " + file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderMaterialsList() {
+      const box = $("materialsListBox");
+      if (!box) return;
+      if (!state.materials.length) {
+        box.innerHTML = `<p class="smallmuted">No class materials uploaded yet.</p>`;
+        return;
+      }
+      box.innerHTML = state.materials
+        .map((m) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border:1px solid #e2e8f0;border-radius:11px;margin-bottom:8px;background:#f8fafc">
+            <div style="min-width:0">
+              <div style="font-weight:800;font-size:13px;color:var(--blue-dark)">📄 ${escapeHtml(m.name)}</div>
+              <div class="smallmuted">${escapeHtml(m.className)} • ${m.sizeKb} KB</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <a class="btn soft small" href="${m.dataUrl}" download="${escapeAttr(m.name)}">Download</a>
+              <button class="btn gray small" onclick="deleteMaterial('${escapeAttr(m.id)}')">✕</button>
+            </div>
+          </div>
+        `)
+        .join("");
+    }
+
+    function deleteMaterial(id) {
+      state.materials = state.materials.filter((m) => m.id !== id);
+      saveState();
+      renderMaterialsList();
+      toast("Removed file");
+    }
+
+    function refreshTeacherPage() {
+      populateClassSelects();
+      if ($("teacherNameInput")) $("teacherNameInput").value = state.teacher || "";
+      if ($("classListBox")) {
+        $("classListBox").innerHTML = state.classes
+          .map((c) => `<span class="tag">${escapeHtml(c.name)} • ${escapeHtml(c.grade)}</span>`)
+          .join("");
+      }
+      renderMaterialsList();
+      if ($("teacherStatsText")) {
+        $("teacherStatsText").textContent = `Classes: ${state.classes.length} • Students: ${state.students.length} • Materials: ${state.materials.length} • Stars Earned: ${state.stars}`;
+      }
+    }
+
+    // Login Modal (Student chooses class, Teacher logs in)
+    function openLoginModal() {
+      populateClassSelects();
+      const m = $("loginModal");
+      if (m) m.classList.add("open");
+    }
+
+    function closeLoginModal() {
+      const m = $("loginModal");
+      if (m) m.classList.remove("open");
+    }
+
+    function switchLoginTab(role) {
+      const isStu = role === "student";
+      $("studentLoginForm")?.classList.toggle("hidden", !isStu);
+      $("teacherLoginForm")?.classList.toggle("hidden", isStu);
+      if ($("tabLoginStudent")) $("tabLoginStudent").className = isStu ? "btn small" : "btn soft small";
+      if ($("tabLoginTeacher")) $("tabLoginTeacher").className = !isStu ? "btn small" : "btn soft small";
+    }
+
+    function loginAsStudent() {
+      const name = ($("loginStudentName")?.value || "").trim();
+      const classId = $("loginStudentClass")?.value || state.classes[0]?.id;
+      const pin = ($("loginStudentPin")?.value || "").trim();
+      if (!name) { toast("Please enter your student name."); return; }
+
+      const cls = state.classes.find((c) => c.id === classId) || state.classes[0];
+      if (cls && cls.grade) state.grade = cls.grade;
+
+      let stu = state.students.find((s) => s.name.toLowerCase() === name.toLowerCase());
+      const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      if (!stu) {
+        stu = {
+          id: pin || "STU-" + Math.floor(100 + Math.random() * 900),
+          name,
+          classId: cls ? cls.id : "CLS-G2-A",
+          present: true,
+          time: nowTime
+        };
+        state.students.push(stu);
+      } else {
+        stu.classId = cls ? cls.id : stu.classId;
+        stu.present = true;
+        stu.time = nowTime;
+      }
+
+      state.userRole = "Student";
+      state.userName = name;
+      saveState();
+      syncHeaderBadges();
+      closeLoginModal();
+      toast(`Welcome ${name}! Joined ${cls ? cls.name : "Class"} (Present)`);
+    }
+
+    function loginAsTeacher() {
+      const name = ($("loginTeacherName")?.value || "").trim() || state.teacher || "Teacher";
+      const pin = ($("loginTeacherPin")?.value || "").trim();
+      if (pin !== "1234") {
+        toast("Default Teacher PIN is 1234.");
+        return;
+      }
+      state.teacher = name;
+      state.userRole = "Teacher";
+      state.userName = name;
+      saveState();
+      syncHeaderBadges();
+      closeLoginModal();
+      showPage("teacher");
+      toast("Logged in as Teacher " + name);
+    }
+
+    // Excel / CSV Student Roster & QR Codes
+    function handleRosterFile(ev) {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      const defaultClassId = $("manualStudentClass")?.value || state.classes[0]?.id || "CLS-G2-A";
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          let rows = [];
+          if (file.name.toLowerCase().endsWith(".csv")) {
+            const lines = String(e.target.result || "").split(/\r?\n/).filter(Boolean);
+            rows = lines.slice(1).map((line) => {
+              const parts = line.split(",").map((p) => p.trim().replace(/^"|"$/g, ""));
+              return { name: parts[0], id: parts[1] };
+            });
+          } else if (typeof XLSX !== "undefined") {
+            const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+            rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+          }
+          let added = 0;
+          rows.forEach((r, idx) => {
+            const sName = String(r.Name || r.name || r["Student Name"] || r.student_name || "").trim();
+            if (!sName) return;
+            const sId = String(r.ID || r.id || r["Student ID"] || `STU-${100 + state.students.length + idx + 1}`).trim();
+            if (!state.students.some((x) => x.name.toLowerCase() === sName.toLowerCase())) {
+              state.students.push({ id: sId, name: sName, classId: defaultClassId, present: false, time: "" });
+              added += 1;
+            }
+          });
+          saveState();
+          renderStudentQrCards();
+          toast(`Imported ${added} student(s) & generated QR codes!`);
+        } catch (err) {
+          toast("Could not parse roster file.");
+        }
+      };
+      if (file.name.toLowerCase().endsWith(".csv")) reader.readAsText(file);
+      else reader.readAsArrayBuffer(file);
+    }
+
+    function addManualStudent() {
+      const name = ($("manualStudentName")?.value || "").trim();
+      if (!name) { toast("Enter a student name."); return; }
+      const id = ($("manualStudentId")?.value || "").trim() || "STU-" + Math.floor(100 + Math.random() * 900);
+      const classId = $("manualStudentClass")?.value || state.classes[0]?.id || "CLS-G2-A";
+      state.students.push({ id, name, classId, present: false, time: "" });
+      if ($("manualStudentName")) $("manualStudentName").value = "";
+      if ($("manualStudentId")) $("manualStudentId").value = "";
+      saveState();
+      renderStudentQrCards();
+      toast("Added QR card for " + name);
+    }
+
+    function downloadSampleRoster() {
+      if (typeof XLSX === "undefined") { toast("Excel helper unavailable."); return; }
+      const sample = [
+        { Name: "Sofia Mendoza", ID: "STU-201" },
+        { Name: "Liam Bautista", ID: "STU-202" },
+        { Name: "Chloe Villanueva", ID: "STU-203" }
+      ];
+      const ws = XLSX.utils.json_to_sheet(sample);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Students");
+      XLSX.writeFile(wb, "tara-hub-student-roster-sample.xlsx");
+    }
+
+    function quickCheckIn() {
+      const query = ($("qrScanInput")?.value || "").trim().toLowerCase();
+      if (!query) return;
+      const stu = state.students.find((s) => s.name.toLowerCase().includes(query) || s.id.toLowerCase() === query);
+      if (!stu) { toast("No matching student found."); return; }
+      stu.present = !stu.present;
+      stu.time = stu.present ? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+      if ($("qrScanInput")) $("qrScanInput").value = "";
+      saveState();
+      renderStudentQrCards();
+      toast(`${stu.name}: ${stu.present ? "Present" : "Not Checked In"}`);
+    }
+
+    function toggleStudentAttendance(id) {
+      const stu = state.students.find((s) => s.id === id);
+      if (!stu) return;
+      stu.present = !stu.present;
+      stu.time = stu.present ? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+      saveState();
+      renderStudentQrCards();
+    }
+
+    function renderStudentQrCards() {
+      const container = $("qrCardsContainer");
+      if (!container) return;
+      const filterClass = $("qrClassFilter")?.value || "ALL";
+      const list = state.students.filter((s) => filterClass === "ALL" || s.classId === filterClass);
+
+      if (!list.length) {
+        container.innerHTML = `<div class="card" style="padding:20px;grid-column:1/-1"><p class="smallmuted">No students in this class yet. Upload an Excel file or add a student above.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = list
+        .map((stu, idx) => {
+          const cls = state.classes.find((c) => c.id === stu.classId);
+          return `
+            <div class="qr-card">
+              <div style="font-weight:900;font-size:15px;color:var(--blue-dark)">${escapeHtml(stu.name)}</div>
+              <div class="smallmuted">${escapeHtml(stu.id)} • ${escapeHtml(cls ? cls.name : "Class")}</div>
+              <div class="qr-box" id="qrCanvas-${idx}"></div>
+              <span class="status-pill ${stu.present ? "status-present" : "status-absent"}">${stu.present ? "Present" + (stu.time ? " • " + escapeHtml(stu.time) : "") : "Not Checked In"}</span>
+              <div class="btnrow" style="justify-content:center;margin-top:10px">
+                <button class="btn soft small" onclick="toggleStudentAttendance('${escapeAttr(stu.id)}')">Toggle Status</button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      if (typeof QRCode !== "undefined") {
+        list.forEach((stu, idx) => {
+          const el = $("qrCanvas-" + idx);
+          if (!el) return;
+          el.innerHTML = "";
+          try {
+            new QRCode(el, {
+              text: JSON.stringify({ id: stu.id, name: stu.name, classId: stu.classId }),
+              width: 116,
+              height: 116,
+              colorDark: "#0f294a",
+              colorLight: "#ffffff"
+            });
+          } catch (err) {
+            el.textContent = stu.id;
+          }
+        });
+      }
+    }
+
+    async function downloadAllQrZip() {
+      if (typeof JSZip === "undefined") { toast("ZIP library unavailable."); return; }
+      const zip = new JSZip();
+      const boxes = document.querySelectorAll("[id^='qrCanvas-']");
+      let count = 0;
+      boxes.forEach((box, i) => {
+        const canvas = box.querySelector("canvas");
+        const img = box.querySelector("img");
+        const stu = state.students[i];
+        const safeName = (stu ? stu.name : "student-" + (i + 1)).replace(/[^a-z0-9]/gi, "_");
+        if (canvas) {
+          zip.file(safeName + ".png", canvas.toDataURL("image/png").split(",")[1], { base64: true });
+          count += 1;
+        } else if (img && img.src.startsWith("data:image/png;base64,")) {
+          zip.file(safeName + ".png", img.src.split(",")[1], { base64: true });
+          count += 1;
+        }
+      });
+      if (!count) { toast("No QR images found to zip."); return; }
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "tara-hub-student-qr-codes.zip";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast(`Downloaded ${count} QR codes in ZIP!`);
+    }
+
+    function exportAttendanceExcel() {
+      if (typeof XLSX === "undefined") { toast("Excel library unavailable."); return; }
+      const rows = state.students.map((s) => {
+        const cls = state.classes.find((c) => c.id === s.classId);
+        return {
+          "Student ID": s.id,
+          "Student Name": s.name,
+          "Class": cls ? cls.name : s.classId,
+          "Status": s.present ? "Present" : "Not Checked In",
+          "Time": s.time || ""
+        };
+      });
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+      XLSX.writeFile(wb, "tara-hub-attendance.xlsx");
+    }
+
+    // Whiteboard
+    let boardCanvas, boardCtx, isDrawing = false, lastPt = null;
+    function initBoard() {
+      boardCanvas = $("whiteboard");
+      if (!boardCanvas) return;
+      boardCtx = boardCanvas.getContext("2d");
+      if (!boardCtx || boardCanvas.dataset.ready) return;
+      boardCtx.lineCap = "round";
+      boardCtx.lineJoin = "round";
+      boardCanvas.dataset.ready = "1";
+
+      const getPt = (e) => {
+        const rect = boardCanvas.getBoundingClientRect();
+        return {
+          x: ((e.clientX - rect.left) * boardCanvas.width) / Math.max(1, rect.width),
+          y: ((e.clientY - rect.top) * boardCanvas.height) / Math.max(1, rect.height)
+        };
+      };
+
+      boardCanvas.addEventListener("pointerdown", (e) => {
+        isDrawing = true;
+        lastPt = getPt(e);
+        boardCanvas.setPointerCapture(e.pointerId);
+      });
+      boardCanvas.addEventListener("pointermove", (e) => {
+        if (!isDrawing || !lastPt) return;
+        const pt = getPt(e);
+        boardCtx.beginPath();
+        boardCtx.moveTo(lastPt.x, lastPt.y);
+        boardCtx.lineTo(pt.x, pt.y);
+        boardCtx.strokeStyle = penMode === "eraser" ? "#ffffff" : ($("penColor")?.value || "#1d4ed8");
+        boardCtx.lineWidth = penMode === "eraser" ? 26 : Number($("penSize")?.value || 4);
+        boardCtx.stroke();
+        lastPt = pt;
+      });
+      boardCanvas.addEventListener("pointerup", () => { isDrawing = false; });
+      boardCanvas.addEventListener("pointercancel", () => { isDrawing = false; });
+    }
+
+    function setPen(mode) { penMode = mode; toast(mode === "eraser" ? "Eraser selected" : "Pen selected"); }
+    function clearBoard() { if (boardCtx && boardCanvas) boardCtx.clearRect(0, 0, boardCanvas.width, boardCanvas.height); }
+    function downloadBoard() {
+      if (!boardCanvas) return;
+      const a = document.createElement("a");
+      a.download = "tara-hub-whiteboard.png";
+      a.href = boardCanvas.toDataURL("image/png");
+      a.click();
+    }
+
+    // Progress, Voice & TARA Chat
+    function syncHeaderBadges() {
+      if ($("gradePill")) $("gradePill").textContent = `${(state.grade || "Grade 2").toUpperCase()} • ${state.userRole.toUpperCase()} MODE`;
+      if ($("userBadge")) $("userBadge").textContent = `${state.userRole}: ${state.userName}`;
+    }
+
+    function updateStats() {
+      const acc = state.attempts ? Math.round((state.correct / state.attempts) * 100) + "%" : "—";
+      if ($("statStars")) $("statStars").textContent = state.stars;
+      if ($("statDone")) $("statDone").textContent = state.done;
+      if ($("statLessons")) $("statLessons").textContent = Object.keys(state.lessons || {}).length;
+      if ($("statAccuracy")) $("statAccuracy").textContent = acc;
+      if ($("pStars")) $("pStars").textContent = state.stars;
+      if ($("pDone")) $("pDone").textContent = state.done;
+      if ($("pCorrect")) $("pCorrect").textContent = state.correct;
+      if ($("pAccuracy")) $("pAccuracy").textContent = acc;
+    }
+
+    function refreshProgress() {
+      updateStats();
+      const badges = [];
+      if (state.stars >= 1) badges.push("⭐ First Star");
+      if (state.done >= 5) badges.push("🎯 Active Explorer");
+      if (state.stars >= 10) badges.push("🏅 Star Collector");
+      if (state.fluency.length >= 1) badges.push("📖 Fluency Reader");
+      if ($("passportBadges")) {
+        $("passportBadges").textContent = badges.length ? badges.join("   •   ") : "Complete activities, spin the Word Wheel, or log reading to unlock badges!";
+      }
+    }
+
+    function exportProgressJson() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "tara-hub-progress.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function resetProgress() {
+      state.stars = 0; state.done = 0; state.correct = 0; state.attempts = 0; state.lessons = {};
+      saveState();
+      refreshTeacherPage();
+      refreshProgress();
+      toast("Progress reset");
+    }
+
+    function speak(text) {
+      if (!("speechSynthesis" in window)) { toast("Read-aloud is not supported on this device."); return; }
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(String(text || ""));
+        u.rate = 0.88;
+        window.speechSynthesis.speak(u);
+      } catch (err) {
+        toast("Could not play audio.");
+      }
+    }
+
+    function toggleChat(prefill) {
+      const panel = $("chatPanel");
+      if (!panel) return;
+      panel.classList.toggle("open");
+      if (prefill && $("chatInput")) {
+        $("chatInput").value = prefill;
+        $("chatInput").focus();
+      }
+    }
+
+    function quickAsk(msg) {
+      if ($("chatInput")) $("chatInput").value = msg;
+      sendChat();
+    }
+
+    function addBubble(text, who) {
+      const box = $("chatMessages");
+      if (!box) return;
+      const d = document.createElement("div");
+      d.className = "bubble " + who;
+      d.textContent = text;
+      box.appendChild(d);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendChat() {
+      const input = $("chatInput");
+      if (!input) return;
+      const msg = input.value.trim();
+      if (!msg) return;
+      addBubble(msg, "user");
+      input.value = "";
+      const l = (SUBJECTS[currentSubject]?.lessons[currentLesson]?.[0]) || "this lesson";
+      const ex = getLearnExamples(currentSubject, l);
+      const reply = `(${state.grade} • ${l}) Here is a helpful guide:\n• ${ex[0].main}: ${ex[0].note}\n• ${ex[1].main}: ${ex[1].note}\nTry one step at a time and ask if you want another clue!`;
+      addBubble(reply, "bot");
+    }
+
+    // Initial render
+    renderSubjects();
+    updateIGTopics();
+    populateClassSelects();
+    syncHeaderBadges();
+    updateStats();
+  </script>
+</body>
+</html>
